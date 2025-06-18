@@ -11,15 +11,15 @@ class DeliveryRepositoryImpl (
     private val dao: DeliveryDao
 ) : DeliveryRepository {
 
-    override suspend fun insert(delivery: Delivery) {
+    override suspend fun insertDelivery(delivery: Delivery) {
         dao.insert(delivery.toEntity())
     }
 
-    override suspend fun update(delivery: Delivery) {
+    override suspend fun updateDelivery(delivery: Delivery) {
         dao.update(delivery.toEntity())
     }
 
-    override suspend fun delete(delivery: Delivery) {
+    override suspend fun deleteDelivery(delivery: Delivery) {
         dao.delete(delivery.toEntity())
     }
 
