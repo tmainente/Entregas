@@ -11,20 +11,21 @@ class DeliveryRepositoryImpl (
     private val dao: DeliveryDao
 ) : DeliveryRepository {
 
-    override suspend fun insertDelivery(delivery: Delivery) {
+    override suspend fun insertDelivery(delivery: Delivery) :Result<Unit> = runCatching {
         dao.insert(delivery.toEntity())
     }
 
-    override suspend fun updateDelivery(delivery: Delivery) {
+    override suspend fun updateDelivery(delivery: Delivery) : Result<Unit> = runCatching {
         dao.update(delivery.toEntity())
     }
 
-    override suspend fun deleteDelivery(delivery: Delivery) {
+    override suspend fun deleteDelivery(delivery: Delivery) : Result<Unit> = runCatching {
         dao.delete(delivery.toEntity())
     }
 
-    override fun getAlldeliveries(): Flow<List<Delivery>> =
+    override fun getAlldeliveries(): Result<Flow<List<Delivery>>> = runCatching {
         dao.getAll().map { list -> list.map { it.toModel() } }
+    }
 
     private fun Delivery.toEntity() = DeliveryEntity(
         id, quantPackage, dateLimit, nameClient, cpfClient, cep,

@@ -4,5 +4,5 @@ import com.example.entregas.domain.repository.DeliveryRepository
 import com.example.entregas.domain.model.Delivery
 
 class SaveDeliveryUseCase (private val repository: DeliveryRepository) {
-    suspend operator fun invoke(delivery: Delivery) = repository.insertDelivery(delivery)
+    suspend operator fun invoke(delivery: Delivery) : Result<Unit> = repository.insertDelivery(delivery)
 }

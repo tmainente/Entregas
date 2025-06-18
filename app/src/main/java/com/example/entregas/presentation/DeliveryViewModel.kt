@@ -36,19 +36,27 @@ class DeliveryViewModel(
 
     fun loadDeliveries() {
         viewModelScope.launch(dispatcher) {
-            listDeliveriesUseCase().collect { _deliveries.value = it }
+            listDeliveriesUseCase()
+                .onSuccess { deliveries ->
+                    deliveries.collect{
+                        _deliveries.value = it
+                    }
+                }
+                .onFailure { throwable ->
+                    _uiState.value = DeliveryUiState.Error(throwable.message ?: "Erro desconhecido")
+                }
         }
     }
 
     fun deleteDelivery(delivery: Delivery) {
         viewModelScope.launch(dispatcher) {
             _uiState.value = DeliveryUiState.Loading
-            try {
-                deleteDeliveryUseCase(delivery)
-                _uiState.value = DeliveryUiState.Success(SUCCESS_DELETE_MESSAGE)
-            } catch (e: Exception) {
-                _uiState.value = DeliveryUiState.Error(String.format(ERROR_DELETE_MESSAGE, e.message))
-            }
+                deleteDeliveryUseCase(delivery).onSuccess {
+                    _uiState.value = DeliveryUiState.Success(SUCCESS_DELETE_MESSAGE)
+                } .onFailure {
+                    _uiState.value = DeliveryUiState.Error(String.format(ERROR_DELETE_MESSAGE, it.message))
+                }
+
         }
     }
 

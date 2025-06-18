@@ -31,34 +31,33 @@ class DeliveryFormViewModel(
     fun saveDelivery(delivery: Delivery) {
         viewModelScope.launch(dispatcher) {
             _uiState.value = DeliveryUiState.Loading
-            try {
-                saveDeliveryUseCase(delivery)
-                _uiState.value = DeliveryUiState.Success(DELIVERY_SUCCESSFULLY_REGISTERED)
-            } catch (e: Exception) {
-                _uiState.value = DeliveryUiState.Error(String.format(ERROR_SAVING_DELIVERY, e.message))
-            }
+                saveDeliveryUseCase(delivery).onSuccess {
+                    _uiState.value = DeliveryUiState.Success(DELIVERY_SUCCESSFULLY_REGISTERED)
+                }.onFailure { e ->
+                    _uiState.value = DeliveryUiState.Error(String.format(ERROR_SAVING_DELIVERY, e.message))
+
+                }
         }
     }
 
     fun updateDelivery(delivery: Delivery) {
         viewModelScope.launch(dispatcher) {
             _uiState.value = DeliveryUiState.Loading
-            try {
-                updateDeliveryUseCase(delivery)
-                _uiState.value = DeliveryUiState.Success(DELIVERY_SUCCESSFULLY_UPDATED)
-            } catch (e: Exception) {
-                _uiState.value = DeliveryUiState.Error(String.format(ERROR_UPDATING_DELIVERY, e.message))
-            }
+                updateDeliveryUseCase(delivery).onSuccess {
+                    _uiState.value = DeliveryUiState.Success(DELIVERY_SUCCESSFULLY_UPDATED)
+                }.onFailure { e ->
+                    _uiState.value = DeliveryUiState.Error(String.format(ERROR_UPDATING_DELIVERY, e.message))
+                }
         }
     }
 
     fun fetchCitiesByUf(uf: String) {
         viewModelScope.launch(dispatcher) {
             _uiState.value = DeliveryUiState.Loading
-            try {
-                _cities.value = fetchCitiesByUfUseCase(uf)
+            fetchCitiesByUfUseCase(uf).onSuccess { cities ->
+                _cities.value = cities
                 _uiState.value = DeliveryUiState.Init
-            } catch (e: Exception) {
+            }.onFailure { e ->
                 _uiState.value = DeliveryUiState.Error(String.format(ERROR_FETCHING_CITIES, e.message))
             }
         }

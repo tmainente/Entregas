@@ -5,5 +5,5 @@ import com.example.entregas.domain.model.Delivery
 import kotlinx.coroutines.flow.Flow
 
 class ShowDeliveryUseCase (private val repository: DeliveryRepository) {
-    operator fun invoke(): Flow<List<Delivery>> = repository.getAlldeliveries()
+    operator fun invoke(): Result<Flow<List<Delivery>>> = repository.getAlldeliveries()
 }
