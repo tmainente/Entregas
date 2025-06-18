@@ -23,6 +23,5 @@ interface DeliveryDao {
     @Query("SELECT * FROM delivery")
     fun getAll(): Flow<List<DeliveryEntity>>
 
-    @Query("SELECT * FROM delivery WHERE id = :id")
-    suspend fun getById(id: Long): Delivery?
+
 }

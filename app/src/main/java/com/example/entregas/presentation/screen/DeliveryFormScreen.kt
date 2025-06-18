@@ -6,58 +6,55 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.example.entregas.R
 import com.example.entregas.domain.model.Delivery
 import com.example.entregas.presentation.DeliveryFormViewModel
 import org.koin.androidx.compose.koinViewModel
+import kotlinx.serialization.json.Json
+import java.net.URLDecoder
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeliveryFormScreen(
-    deliveryId: Long?,
+    deliveryJson: String?,
     onBack: () -> Unit,
     viewModel: DeliveryFormViewModel = koinViewModel()
 ) {
+    val context = LocalContext.current
+    val delivery = remember (deliveryJson) {
+        deliveryJson?.takeIf { it.isNotEmpty() }?.let {
+            Json.decodeFromString<Delivery>(URLDecoder.decode(it, "UTF-8"))
+        }
+    }
     val cities by viewModel.cities.collectAsState()
-    val estados = listOf("AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO")
-
-    var nome by remember { mutableStateOf("") }
-    var cpf by remember { mutableStateOf("") }
-    var cidade by remember { mutableStateOf("") }
-    var uf by remember { mutableStateOf("") }
-    var rua by remember { mutableStateOf("") }
-    var numero by remember { mutableStateOf("") }
-    var complemento by remember { mutableStateOf("") }
-    var cep by remember { mutableStateOf("") }
-    var bairro by remember { mutableStateOf("") }
-    var data by remember { mutableStateOf("") }
-    var pacotes by remember { mutableStateOf("1") }
+    val estados =  context.resources.getStringArray(R.array.UF)
+    var nome by remember { mutableStateOf(delivery?.nameClient ?: "") }
+    var cpf by remember { mutableStateOf(delivery?.cpfClient ?: "") }
+    var cidade by remember { mutableStateOf(delivery?.city ?: "") }
+    var uf by remember { mutableStateOf(delivery?.uf ?: "") }
+    var rua by remember { mutableStateOf(delivery?.street ?: "") }
+    var numero by remember { mutableStateOf(delivery?.number ?: "") }
+    var complemento by remember { mutableStateOf(delivery?.complement ?: "") }
+    var cep by remember { mutableStateOf(delivery?.cep ?: "") }
+    var bairro by remember { mutableStateOf(delivery?.neighborhood ?: "") }
+    var data by remember { mutableStateOf(delivery?.dateLimit ?: "") }
+    var pacotes by remember { mutableStateOf(delivery?.quantPackage?.toString() ?: "1") }
     var cidadeExpanded by remember { mutableStateOf(false) }
     var ufExpanded by remember { mutableStateOf(false) }
 
-    // Carrega entrega existente, se deliveryId não for nulo
-    LaunchedEffect(deliveryId) {
-        deliveryId?.let {
-            viewModel.getDeliveryById(it)?.let { delivery ->
-                nome = delivery.nameClient
-                cpf = delivery.cpfClient
-                data = delivery.dateLimit
-                cep = delivery.cep
-                uf = delivery.uf
-                cidade = delivery.city
-                bairro = delivery.neighborhood
-                rua = delivery.street
-                numero = delivery.number
-                complemento = delivery.complement ?: ""
-                pacotes = delivery.quantPackage.toString()
-                viewModel.fetchCitiesByUf(delivery.uf)
-            }
+    LaunchedEffect(uf) {
+        if (uf.isNotEmpty()) {
+            viewModel.fetchCitiesByUf(uf)
         }
     }
 
+
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text(if (deliveryId != null) "Editar Entrega" else "Nova Entrega") })
+            TopAppBar(title = { Text(if (delivery != null) context.resources.getString(R.string.title_update) else
+                context.resources.getString(R.string.title_new)) })
         }
     ) { padding ->
         Column(
@@ -68,10 +65,10 @@ fun DeliveryFormScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            OutlinedTextField(value = nome, onValueChange = { nome = it }, label = { Text("Nome do Cliente") })
-            OutlinedTextField(value = cpf, onValueChange = { cpf = it }, label = { Text("CPF") })
-            OutlinedTextField(value = data, onValueChange = { data = it }, label = { Text("Data Limite") })
-            OutlinedTextField(value = cep, onValueChange = { cep = it }, label = { Text("CEP") })
+            OutlinedTextField(value = nome, onValueChange = { nome = it }, label = { Text(context.resources.getString(R.string.label_name)) })
+            OutlinedTextField(value = cpf, onValueChange = { cpf = it }, label = { Text(context.resources.getString(R.string.label_cpf)) })
+            OutlinedTextField(value = data, onValueChange = { data = it }, label = { Text(context.resources.getString(R.string.label_data)) })
+            OutlinedTextField(value = cep, onValueChange = { cep = it }, label = { Text(context.resources.getString(R.string.label_cep)) })
 
             ExposedDropdownMenuBox(
                 expanded = ufExpanded,
@@ -81,7 +78,7 @@ fun DeliveryFormScreen(
                     value = uf,
                     onValueChange = { },
                     readOnly = true,
-                    label = { Text("UF") },
+                    label = { Text(context.resources.getString(R.string.label_uf)) },
                     modifier = Modifier.menuAnchor()
                 )
                 ExposedDropdownMenu(
@@ -109,7 +106,7 @@ fun DeliveryFormScreen(
                     value = cidade,
                     onValueChange = { cidade = it },
                     readOnly = true,
-                    label = { Text("Cidade") },
+                    label = { Text(context.resources.getString(R.string.label_city)) },
                     modifier = Modifier.menuAnchor()
                 )
                 ExposedDropdownMenu(
@@ -128,15 +125,20 @@ fun DeliveryFormScreen(
                 }
             }
 
-            OutlinedTextField(value = bairro, onValueChange = { bairro = it }, label = { Text("Bairro") })
-            OutlinedTextField(value = rua, onValueChange = { rua = it }, label = { Text("Rua") })
-            OutlinedTextField(value = numero, onValueChange = { numero = it }, label = { Text("Número") })
-            OutlinedTextField(value = complemento, onValueChange = { complemento = it }, label = { Text("Complemento") })
-            OutlinedTextField(value = pacotes, onValueChange = { pacotes = it }, label = { Text("Qtd Pacotes") })
+            OutlinedTextField(value = bairro, onValueChange = { bairro = it },
+                label = { Text(context.resources.getString(R.string.label_neighborhood)) })
+            OutlinedTextField(value = rua, onValueChange = { rua = it },
+                label = { Text(context.resources.getString(R.string.label_street)) })
+            OutlinedTextField(value = numero, onValueChange = { numero = it },
+                label = { Text(context.resources.getString(R.string.label_number)) })
+            OutlinedTextField(value = complemento, onValueChange = { complemento = it },
+                label = { Text(context.resources.getString(R.string.label_complement)) })
+            OutlinedTextField(value = pacotes, onValueChange = { pacotes = it },
+                label = { Text(context.resources.getString(R.string.label_package)) })
 
             Button(onClick = {
                 val entrega = Delivery(
-                    id = deliveryId ?: 0L,
+                    id = delivery?.id ?: 0L,
                     nameClient = nome,
                     cpfClient = cpf,
                     dateLimit = data,
@@ -149,11 +151,11 @@ fun DeliveryFormScreen(
                     complement = complemento.ifBlank { null },
                     quantPackage = pacotes.toIntOrNull() ?: 1
                 )
-                if (deliveryId != null) viewModel.updateDelivery(entrega)
+                if (delivery != null) viewModel.updateDelivery(entrega)
                 else viewModel.saveDelivery(entrega)
                 onBack()
             }) {
-                Text("Salvar")
+                Text(context.resources.getString(R.string.label_btn_save))
             }
         }
     }

@@ -8,6 +8,4 @@ interface DeliveryRepository {
     suspend fun update(delivery: Delivery)
     suspend fun delete(delivery: Delivery)
     fun getAlldeliveries(): Flow<List<Delivery>>
-    suspend fun getDeliveryById(id: Long): Delivery?
-
 }

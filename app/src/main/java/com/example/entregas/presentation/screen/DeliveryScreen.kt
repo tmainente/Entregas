@@ -1,5 +1,6 @@
 package com.example.entregas.presentation.screen
 
+import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -7,7 +8,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.example.entregas.R
 import com.example.entregas.domain.model.Delivery
 import com.example.entregas.presentation.DeliveryViewModel
 import com.example.entregas.util.DeliveryUiState
@@ -17,7 +20,8 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun DeliveryScreen(
     viewModel: DeliveryViewModel = koinViewModel(),
-    onNavigateToForm: (Long?) -> Unit
+    context: Context = LocalContext.current,
+    onNavigateToForm: (Delivery?) -> Unit
 ) {
     val deliveries by viewModel.deliveries.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
@@ -36,11 +40,11 @@ fun DeliveryScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            TopAppBar(title = { Text("Deliverys") })
+            TopAppBar(title = { Text(context.resources.getString(R.string.title_delivery)) })
         },
         floatingActionButton = {
             FloatingActionButton(onClick = { onNavigateToForm(null) }) {
-                Text("+")
+                Text(context.resources.getString(R.string.label_btn_floating))
             }
         }
     ) { padding ->
@@ -58,7 +62,7 @@ fun DeliveryScreen(
                         DeliveryItem(
                             delivery = delivery,
                             onDelete = { viewModel.deleteDelivery(delivery) },
-                            onEdit = { onNavigateToForm(delivery.id) }
+                            onEdit = { onNavigateToForm(delivery) }
                         )
                     }
                 }
@@ -68,7 +72,7 @@ fun DeliveryScreen(
 }
 
 @Composable
-fun DeliveryItem(delivery: Delivery, onDelete: () -> Unit, onEdit: () -> Unit) {
+fun DeliveryItem(delivery: Delivery, context: Context = LocalContext.current, onDelete: () -> Unit, onEdit: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -76,11 +80,11 @@ fun DeliveryItem(delivery: Delivery, onDelete: () -> Unit, onEdit: () -> Unit) {
         elevation = CardDefaults.cardElevation()
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
-            Text("Cliente: ${delivery.nameClient}")
-            Text("Cidade: ${delivery.city}")
+            Text("${context.resources.getString(R.string.label_client)} ${delivery.nameClient}")
+            Text("${context.resources.getString(R.string.label_city)} ${delivery.city}")
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(onClick = onDelete) { Text("Excluir") }
-                Button(onClick = onEdit) { Text("Editar") }
+                Button(onClick = onDelete) { Text(context.resources.getString(R.string.label_btn_delete)) }
+                Button(onClick = onEdit) { Text(context.resources.getString(R.string.label_btn_edit)) }
             }
         }
     }

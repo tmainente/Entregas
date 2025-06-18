@@ -22,11 +22,13 @@ class DeliveryViewModel(
     private val _deliveries = MutableStateFlow<List<Delivery>>(emptyList())
     val deliveries: StateFlow<List<Delivery>> = _deliveries.asStateFlow()
 
-    private val _cities = MutableStateFlow<List<String>>(emptyList())
-    val cities: StateFlow<List<String>> = _cities.asStateFlow()
-
     private val _uiState = MutableStateFlow<DeliveryUiState>(DeliveryUiState.Init)
     val uiState: StateFlow<DeliveryUiState> = _uiState.asStateFlow()
+
+    companion object {
+        private const val SUCCESS_DELETE_MESSAGE = "Entrega excluída com sucesso"
+        private const val ERROR_DELETE_MESSAGE = "Erro ao excluir: %s"
+    }
 
     init {
         loadDeliveries()
@@ -43,9 +45,9 @@ class DeliveryViewModel(
             _uiState.value = DeliveryUiState.Loading
             try {
                 deleteDeliveryUseCase(delivery)
-                _uiState.value = DeliveryUiState.Success("Entrega excluída com sucesso")
+                _uiState.value = DeliveryUiState.Success(SUCCESS_DELETE_MESSAGE)
             } catch (e: Exception) {
-                _uiState.value = DeliveryUiState.Error("Erro ao excluir: ${e.message}")
+                _uiState.value = DeliveryUiState.Error(String.format(ERROR_DELETE_MESSAGE, e.message))
             }
         }
     }

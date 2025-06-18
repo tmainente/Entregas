@@ -26,10 +26,6 @@ class DeliveryRepositoryImpl (
     override fun getAlldeliveries(): Flow<List<Delivery>> =
         dao.getAll().map { list -> list.map { it.toModel() } }
 
-    override suspend fun getDeliveryById(id: Long): Delivery? {
-        return dao.getById(id)
-    }
-
     private fun Delivery.toEntity() = DeliveryEntity(
         id, quantPackage, dateLimit, nameClient, cpfClient, cep,
         uf, city, neighborhood, street, number, complement

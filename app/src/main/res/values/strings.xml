@@ -1,3 +1,54 @@
 <resources>
     <string name="app_name">Entregas</string>
+    <string name="title_delivery">Historico de Entregas</string>
+    <string name="title_new">Nova Entrega</string>
+    <string name="title_update">Editar Entrega</string>
+    <string name="label_name">"Nome do Cliente"</string>
+    <string name="label_cpf">CPF</string>
+    <string name="label_data">Data Limite</string>">
+    <string name="label_cep">CEP</string>">
+    <string name="label_uf">UF</string>"
+    <string name="label_city">Cidade</string>"
+    <string name="label_neighborhood">Bairro</string>"
+    <string name="label_street">Rua</string>"
+    <string name="label_number">Número</string>"
+    <string name="label_complement">Complemento</string>"
+    <string name="label_package">Complemento</string>"
+    <string name="label_btn_save">Salvar</string>
+    <string name="label_btn_delete">Excluir</string>
+    <string name="label_btn_edit">Editar</string>"
+    <string name="label_btn_floating">+</string>"
+    <string name="label_client">Cliente:</string>
+    <string name="labelc_city">Cidade:</string>">
+
+
+    <string-array name="UF">
+        <item>AC</item>
+        <item>AL</item>
+        <item>AP</item>
+        <item>AM</item>
+        <item>BA</item>
+        <item>CE</item>
+        <item>DF</item>
+        <item>ES</item>
+        <item>GO</item>
+        <item>MA</item>
+        <item>MT</item>
+        <item>MS</item>
+        <item>MG</item>
+        <item>PA</item>
+        <item>PB</item>
+        <item>PR</item>
+        <item>PE</item>
+        <item>PI</item>
+        <item>RJ</item>
+        <item>RN</item>
+        <item>RS</item>
+        <item>RO</item>
+        <item>RR</item>
+        <item>SC</item>
+        <item>SP</item>
+        <item>SE</item>
+        <item>TO</item>
+    </string-array>
 </resources>

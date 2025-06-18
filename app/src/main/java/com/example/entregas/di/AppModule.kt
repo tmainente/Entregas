@@ -12,7 +12,6 @@ import com.example.entregas.domain.usecases.DeleteDeliveryUseCase
 import com.example.entregas.domain.usecases.UpdateDeliveryUseCase
 import com.example.entregas.domain.usecases.ShowDeliveryUseCase
 import com.example.entregas.domain.usecases.ShowCityUseCase
-import com.example.entregas.domain.usecases.ShowDeliveryByIdUseCase
 import com.example.entregas.presentation.DeliveryFormViewModel
 import com.example.entregas.presentation.DeliveryViewModel
 import okhttp3.OkHttpClient
@@ -22,6 +21,8 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit.SECONDS
+
+private const val BASE_URL = "https://servicodados.ibge.gov.br/api/v1/"
 private const val TIMEOUT = 30L
 
 val databaseModule = module {
@@ -43,7 +44,7 @@ val databaseModule = module {
             .build()
         single {
             Retrofit.Builder()
-                .baseUrl("https://servicodados.ibge.gov.br/api/v1/")
+                .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client)
                 .build()
@@ -61,7 +62,6 @@ val databaseModule = module {
         single { DeleteDeliveryUseCase(get()) }
         single { UpdateDeliveryUseCase(get()) }
         single { ShowDeliveryUseCase(get()) }
-        single { ShowDeliveryByIdUseCase(get()) }
         single { ShowCityUseCase(get()) }
     }
 
@@ -76,8 +76,7 @@ val viewModelModule = module {
         DeliveryFormViewModel(
             saveDeliveryUseCase = get(),
             updateDeliveryUseCase = get(),
-            fetchCitiesByUfUseCase = get(),
-            deliveryByIdUseCase = get(),
+            fetchCitiesByUfUseCase = get()
         )
     }
 }

@@ -3,11 +3,8 @@ package com.example.entregas.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.entregas.domain.model.Delivery
-import com.example.entregas.domain.usecases.DeleteDeliveryUseCase
 import com.example.entregas.domain.usecases.SaveDeliveryUseCase
 import com.example.entregas.domain.usecases.ShowCityUseCase
-import com.example.entregas.domain.usecases.ShowDeliveryByIdUseCase
-import com.example.entregas.domain.usecases.ShowDeliveryUseCase
 import com.example.entregas.domain.usecases.UpdateDeliveryUseCase
 import com.example.entregas.util.DeliveryUiState
 import kotlinx.coroutines.CoroutineDispatcher
@@ -20,7 +17,6 @@ import kotlinx.coroutines.launch
 class DeliveryFormViewModel(
     private val saveDeliveryUseCase: SaveDeliveryUseCase,
     private val updateDeliveryUseCase: UpdateDeliveryUseCase,
-    private val deliveryByIdUseCase: ShowDeliveryByIdUseCase,
     private val fetchCitiesByUfUseCase: ShowCityUseCase,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
@@ -32,17 +28,14 @@ class DeliveryFormViewModel(
     private val _uiState = MutableStateFlow<DeliveryUiState>(DeliveryUiState.Init)
     val uiState: StateFlow<DeliveryUiState> = _uiState.asStateFlow()
 
-    init {
-    }
-
     fun saveDelivery(delivery: Delivery) {
         viewModelScope.launch(dispatcher) {
             _uiState.value = DeliveryUiState.Loading
             try {
                 saveDeliveryUseCase(delivery)
-                _uiState.value = DeliveryUiState.Success("Entrega cadastrada com sucesso")
+                _uiState.value = DeliveryUiState.Success(DELIVERY_SUCCESSFULLY_REGISTERED)
             } catch (e: Exception) {
-                _uiState.value = DeliveryUiState.Error("Erro ao salvar: ${e.message}")
+                _uiState.value = DeliveryUiState.Error(String.format(ERROR_SAVING_DELIVERY, e.message))
             }
         }
     }
@@ -52,9 +45,9 @@ class DeliveryFormViewModel(
             _uiState.value = DeliveryUiState.Loading
             try {
                 updateDeliveryUseCase(delivery)
-                _uiState.value = DeliveryUiState.Success("Entrega atualizada com sucesso")
+                _uiState.value = DeliveryUiState.Success(DELIVERY_SUCCESSFULLY_UPDATED)
             } catch (e: Exception) {
-                _uiState.value = DeliveryUiState.Error("Erro ao atualizar: ${e.message}")
+                _uiState.value = DeliveryUiState.Error(String.format(ERROR_UPDATING_DELIVERY, e.message))
             }
         }
     }
@@ -66,20 +59,16 @@ class DeliveryFormViewModel(
                 _cities.value = fetchCitiesByUfUseCase(uf)
                 _uiState.value = DeliveryUiState.Init
             } catch (e: Exception) {
-                _uiState.value = DeliveryUiState.Error("Erro ao buscar cidades: ${e.message}")
+                _uiState.value = DeliveryUiState.Error(String.format(ERROR_FETCHING_CITIES, e.message))
             }
         }
     }
 
-    fun getDeliveryById(id: Long): Delivery? {
-        var entrega: Delivery? = null
-        viewModelScope.launch(dispatcher) {
-            entrega = deliveryByIdUseCase(id)
-        }
-        return entrega
-    }
-
-    fun clearUiState() {
-        _uiState.value = DeliveryUiState.Init
+    companion object {
+        const val ERROR_SAVING_DELIVERY = "Erro ao salvar: %s"
+        const val ERROR_FETCHING_CITIES = "Erro ao buscar cidades: %s"
+        const val ERROR_UPDATING_DELIVERY = "Erro ao atualizar: %s"
+        const val DELIVERY_SUCCESSFULLY_REGISTERED = "Entrega cadastrada com sucesso"
+        const val DELIVERY_SUCCESSFULLY_UPDATED = "Entrega atualizada com sucesso"
     }
 }

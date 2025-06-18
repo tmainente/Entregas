@@ -1,5 +1,7 @@
 package com.example.entregas.domain.model
 
+
+@kotlinx.serialization.Serializable
 data class Delivery(
     val id: Long = 0L,
     val quantPackage: Int,
