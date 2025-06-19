@@ -1,4 +1,4 @@
-package com.example.entregas.ui.theme
+package com.example.entregas.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 
