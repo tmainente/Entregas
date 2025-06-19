@@ -6,7 +6,9 @@ import com.example.entregas.domain.model.Delivery
 import com.example.entregas.domain.usecases.SaveDeliveryUseCase
 import com.example.entregas.domain.usecases.ShowCityUseCase
 import com.example.entregas.domain.usecases.UpdateDeliveryUseCase
+import com.example.entregas.util.DefaultDispatcherProvider
 import com.example.entregas.util.DeliveryUiState
+import com.example.entregas.util.DispatcherProvider
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +20,7 @@ class DeliveryFormViewModel(
     private val saveDeliveryUseCase: SaveDeliveryUseCase,
     private val updateDeliveryUseCase: UpdateDeliveryUseCase,
     private val fetchCitiesByUfUseCase: ShowCityUseCase,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val dispatcherProvider: DispatcherProvider = DefaultDispatcherProvider
 ) : ViewModel() {
 
 
@@ -29,7 +31,7 @@ class DeliveryFormViewModel(
     val uiState: StateFlow<DeliveryUiState> = _uiState.asStateFlow()
 
     fun saveDelivery(delivery: Delivery) {
-        viewModelScope.launch(dispatcher) {
+        viewModelScope.launch(dispatcherProvider.io) {
             _uiState.value = DeliveryUiState.Loading
                 saveDeliveryUseCase(delivery).onSuccess {
                     _uiState.value = DeliveryUiState.Success(DELIVERY_SUCCESSFULLY_REGISTERED)
@@ -41,7 +43,7 @@ class DeliveryFormViewModel(
     }
 
     fun updateDelivery(delivery: Delivery) {
-        viewModelScope.launch(dispatcher) {
+        viewModelScope.launch(dispatcherProvider.io) {
             _uiState.value = DeliveryUiState.Loading
                 updateDeliveryUseCase(delivery).onSuccess {
                     _uiState.value = DeliveryUiState.Success(DELIVERY_SUCCESSFULLY_UPDATED)
@@ -52,7 +54,7 @@ class DeliveryFormViewModel(
     }
 
     fun fetchCitiesByUf(uf: String) {
-        viewModelScope.launch(dispatcher) {
+        viewModelScope.launch(dispatcherProvider.io) {
             _uiState.value = DeliveryUiState.Loading
             fetchCitiesByUfUseCase(uf).onSuccess { cities ->
                 _cities.value = cities

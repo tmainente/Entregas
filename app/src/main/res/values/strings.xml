@@ -13,7 +13,7 @@
     <string name="label_street">Rua</string>"
     <string name="label_number">Número</string>"
     <string name="label_complement">Complemento</string>"
-    <string name="label_package">Complemento</string>"
+    <string name="label_package">Pacote</string>"
     <string name="label_btn_save">Salvar</string>
     <string name="label_btn_delete">Excluir</string>
     <string name="label_btn_edit">Editar</string>"

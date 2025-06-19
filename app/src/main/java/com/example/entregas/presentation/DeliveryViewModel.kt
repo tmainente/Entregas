@@ -5,9 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.entregas.domain.model.Delivery
 import com.example.entregas.domain.usecases.DeleteDeliveryUseCase
 import com.example.entregas.domain.usecases.ShowDeliveryUseCase
+import com.example.entregas.util.DefaultDispatcherProvider
 import com.example.entregas.util.DeliveryUiState
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
+import com.example.entregas.util.DispatcherProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 class DeliveryViewModel(
     private val deleteDeliveryUseCase: DeleteDeliveryUseCase,
     private val listDeliveriesUseCase: ShowDeliveryUseCase,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val dispatcherProvider: DispatcherProvider = DefaultDispatcherProvider
 ) : ViewModel() {
 
     private val _deliveries = MutableStateFlow<List<Delivery>>(emptyList())
@@ -30,26 +30,30 @@ class DeliveryViewModel(
         private const val ERROR_DELETE_MESSAGE = "Erro ao excluir: %s"
     }
 
-    init {
-        loadDeliveries()
-    }
 
     fun loadDeliveries() {
-        viewModelScope.launch(dispatcher) {
-            listDeliveriesUseCase()
-                .onSuccess { deliveries ->
-                    deliveries.collect{
-                        _deliveries.value = it
+        viewModelScope.launch(dispatcherProvider.io) {
+            _uiState.value = DeliveryUiState.Loading
+
+            listDeliveriesUseCase().onSuccess { flowDelivery ->
+                flowDelivery.collect { deliveries ->
+                    _deliveries.value = deliveries
+                    if(deliveries.isEmpty()) {
+                        _uiState.value = DeliveryUiState.Error("vazio")
+                } else{
+                    _uiState.value = DeliveryUiState.Success("Entregas carregadas com sucesso")
+                }
+
                     }
-                }
-                .onFailure { throwable ->
-                    _uiState.value = DeliveryUiState.Error(throwable.message ?: "Erro desconhecido")
-                }
-        }
+
+            }.onFailure {
+                _uiState.value = DeliveryUiState.Error(it.message ?: "Erro desconhecido")
+            }
+            }
     }
 
     fun deleteDelivery(delivery: Delivery) {
-        viewModelScope.launch(dispatcher) {
+        viewModelScope.launch(dispatcherProvider.io) {
             _uiState.value = DeliveryUiState.Loading
                 deleteDeliveryUseCase(delivery).onSuccess {
                     _uiState.value = DeliveryUiState.Success(SUCCESS_DELETE_MESSAGE)

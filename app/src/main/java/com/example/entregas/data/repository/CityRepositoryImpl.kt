@@ -10,13 +10,11 @@ class CityRepositoryImpl (
 ) : CityRepository {
 
     override suspend fun getCityUf(uf: String): Result<List<String>> {
-        return withContext(Dispatchers.IO) {
             try {
                 val city = service.getCidadesPorUf(uf).map { it.nome }
-                Result.success(city)
+                return Result.success(city)
             } catch (e: Exception) {
-                Result.failure(e)
+                return Result.failure(e)
             }
-        }
     }
 }
