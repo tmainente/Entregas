@@ -1,4 +1,3 @@
-Ótimo\! Com essas informações, podemos criar um README bem completo e útil para desenvolvedores.
 
 -----
 
