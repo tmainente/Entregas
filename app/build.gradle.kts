@@ -69,7 +69,6 @@ dependencies {
     implementation(libs.room.ktx)
     implementation(libs.androidx.junit.ktx)
     kapt("androidx.room:room-compiler:2.7.1")
-
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.coroutines.test)
@@ -88,7 +87,6 @@ dependencies {
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     androidTestImplementation (libs.insert.koin.koin.androidx.test)
-
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 

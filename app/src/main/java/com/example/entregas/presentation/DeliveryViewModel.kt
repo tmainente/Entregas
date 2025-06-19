@@ -13,6 +13,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+private const val SUCCESS_DELETE_MESSAGE = "Entrega excluída com sucesso"
+private const val ERROR_DELETE_MESSAGE = "Erro ao excluir: %s"
+private const val EMPTY_LIST_MESSAGE = "Nenhuma entrega encontrada"
+private const val UNKNOWN_ERROR_MESSAGE = "Erro desconhecido"
+private const val SUCCESS_LOAD_MESSAGE = "Entregas carregadas com sucesso"
 class DeliveryViewModel(
     private val deleteDeliveryUseCase: DeleteDeliveryUseCase,
     private val listDeliveriesUseCase: ShowDeliveryUseCase,
@@ -25,29 +30,20 @@ class DeliveryViewModel(
     private val _uiState = MutableStateFlow<DeliveryUiState>(DeliveryUiState.Init)
     val uiState: StateFlow<DeliveryUiState> = _uiState.asStateFlow()
 
-    companion object {
-        private const val SUCCESS_DELETE_MESSAGE = "Entrega excluída com sucesso"
-        private const val ERROR_DELETE_MESSAGE = "Erro ao excluir: %s"
-    }
-
-
     fun loadDeliveries() {
         viewModelScope.launch(dispatcherProvider.io) {
             _uiState.value = DeliveryUiState.Loading
 
             listDeliveriesUseCase().onSuccess { flowDelivery ->
+                _uiState.value = DeliveryUiState.Success(SUCCESS_LOAD_MESSAGE)
                 flowDelivery.collect { deliveries ->
                     _deliveries.value = deliveries
                     if(deliveries.isEmpty()) {
-                        _uiState.value = DeliveryUiState.Error("vazio")
-                } else{
-                    _uiState.value = DeliveryUiState.Success("Entregas carregadas com sucesso")
+                        _uiState.value = DeliveryUiState.Error(EMPTY_LIST_MESSAGE)
                 }
-
-                    }
-
+                }
             }.onFailure {
-                _uiState.value = DeliveryUiState.Error(it.message ?: "Erro desconhecido")
+                _uiState.value = DeliveryUiState.Error(it.message ?: UNKNOWN_ERROR_MESSAGE)
             }
             }
     }

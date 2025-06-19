@@ -3,6 +3,8 @@ package com.example.entregas.data.repository
 import com.example.entregas.domain.repository.DeliveryRepository
 import com.example.entregas.data.local.DeliveryDao
 import com.example.entregas.data.local.DeliveryEntity
+import com.example.entregas.data.toEntity
+import com.example.entregas.data.toModel
 import com.example.entregas.domain.model.Delivery
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -27,13 +29,4 @@ class DeliveryRepositoryImpl (
         dao.getAll().map { list -> list.map { it.toModel() } }
     }
 
-    private fun Delivery.toEntity() = DeliveryEntity(
-        id, quantPackage, dateLimit, nameClient, cpfClient, cep,
-        uf, city, neighborhood, street, number, complement
-    )
-
-    private fun DeliveryEntity.toModel() = Delivery(
-        id, quantPackage, dateLimit, nameClient, cpfClient, cep,
-        uf, city, neighborhood, street, number, complement
-    )
 }

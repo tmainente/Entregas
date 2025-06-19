@@ -47,7 +47,6 @@ class KoinAppModulesTest : KoinTest {
             modules(fakeModule, networkModule, useCaseModule, viewModelModule) // Mock Context
             checkModules()
         }
-        assertTrue(true)
     }
 
 }

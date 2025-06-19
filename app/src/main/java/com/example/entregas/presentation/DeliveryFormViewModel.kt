@@ -16,6 +16,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+const val ERROR_SAVING_DELIVERY = "Erro ao salvar: %s"
+const val ERROR_FETCHING_CITIES = "Erro ao buscar cidades: %s"
+const val ERROR_UPDATING_DELIVERY = "Erro ao atualizar: %s"
+const val DELIVERY_SUCCESSFULLY_REGISTERED = "Entrega cadastrada com sucesso"
+const val DELIVERY_SUCCESSFULLY_UPDATED = "Entrega atualizada com sucesso"
 class DeliveryFormViewModel(
     private val saveDeliveryUseCase: SaveDeliveryUseCase,
     private val updateDeliveryUseCase: UpdateDeliveryUseCase,
@@ -63,13 +68,5 @@ class DeliveryFormViewModel(
                 _uiState.value = DeliveryUiState.Error(String.format(ERROR_FETCHING_CITIES, e.message))
             }
         }
-    }
-
-    companion object {
-        const val ERROR_SAVING_DELIVERY = "Erro ao salvar: %s"
-        const val ERROR_FETCHING_CITIES = "Erro ao buscar cidades: %s"
-        const val ERROR_UPDATING_DELIVERY = "Erro ao atualizar: %s"
-        const val DELIVERY_SUCCESSFULLY_REGISTERED = "Entrega cadastrada com sucesso"
-        const val DELIVERY_SUCCESSFULLY_UPDATED = "Entrega atualizada com sucesso"
     }
 }

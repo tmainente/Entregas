@@ -27,7 +27,6 @@ fun DeliveryFormScreen(
     onBack: () -> Unit,
     viewModel: DeliveryFormViewModel = koinViewModel()
 ) {
-    val context = LocalContext.current
     val delivery = remember(deliveryJson) {
         deliveryJson?.takeIf { it.isNotEmpty() }?.let {
             Json.decodeFromString<Delivery>(URLDecoder.decode(it, "UTF-8"))
